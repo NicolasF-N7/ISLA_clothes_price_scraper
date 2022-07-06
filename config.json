@@ -1,0 +1,44 @@
+{
+  "outputDataSheet": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/Brand_popularity.csv",
+  "cookiesFilePath": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/vinted+vc_cookies.json",
+  "brands_to_process": ["Nat & Nin"],
+  "marketplaces_to_visit": [
+    {
+      "name": "VC", "baseURL": "https://www.vestiairecollective.com/", "searchPrefix": "search/?q=",  "searchPostfix": "",
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/cookies/vc_cookies.json",
+      "selectors": ["#main-content > catalog-page > vc-catalog > div > div > ais-instantsearch > div > div.catalog__columnFilters > div.catalog__colmunFiltersInner > vc-catalog-filters > nav > div:nth-child(2) > vc-catalog-widget-checkbox-list > fieldset > div.ais-RefinementList-body.ais-body > ul > li:nth-child(3) > label > span",
+        "#main-content > catalog-page > vc-catalog > div > div > ais-instantsearch > div > div.catalog__columnFilters > div.catalog__colmunFiltersInner > vc-catalog-filters > nav > div:nth-child(2) > vc-catalog-widget-checkbox-list > fieldset > div.ais-RefinementList-body.ais-body > ul > li:nth-child(4) > label > span"]
+    },
+    {
+      "name": "Depop", "baseURL": "https://www.depop.com/", "searchPrefix": "search/?q=",  "searchPostfix": "",
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/cookies/depop_cookies.json",
+      "selectors": ["#main > div.Container-sc-__sc-1t5af73-0.Searchstyles__StyledContainer-sc-__sc-1ep2n60-0.iBSLBV.gbFjzF > h1 > b"]
+    },
+    {
+      "name": "HardlyEverWornIt", "baseURL": "https://hardlyeverwornit.com/", "searchPrefix": "search?prod_prod_products%5Bquery%5D=", "searchPostfix": "",
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/cookies/hardlyEverWornIt_cookies.json",
+      "selectors": ["#js-search__stats-desktop > div > span"]
+    },
+    {
+      "name": "Etsy", "baseURL": "https://www.etsy.com/", "searchPrefix": "search?q=", "searchPostfix": "",
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/cookies/etsy_cookies.json",
+      "selectors": ["#content > div > div.wt-bg-white.wt-grid__item-md-12.wt-pl-xs-1.wt-pr-xs-0.wt-pr-md-1.wt-pl-lg-0.wt-pr-lg-0.wt-bb-xs-1 > div > div.wt-mt-xs-3.wt-text-black > div.wt-grid.wt-pl-xs-0.wt-pr-xs-1.search-listings-group > div:nth-child(3) > div.wt-display-flex-xs.wt-mt-xs-1.wt-mb-xs-2.wt-justify-content-space-between.wt-align-items-center > div.wt-display-flex-xs.wt-align-items-center.wt-pr-lg-3 > div.wt-text-right-xs.wt-text-left-md.wt-pr-md-0.wt-pr-xs-1 > span > span > span:nth-child(1)"]
+    },
+    {
+      "name": "VideDressing", "baseURL": "https://www.videdressing.com/", "searchPrefix": "recherche.html?q=", "searchPostfix": "&sizeType=fr&lang=fr",
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/cookies/videDressing_cookies.json",
+      "selectors": ["#ais-index > div:nth-child(2) > div.catalog-top > p"]
+    },
+    {
+      "name": "TheLuxuryCloset", "baseURL": "https://theluxurycloset.com/", "searchPrefix": "filter?search=", "searchPostfix": "",
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/cookies/theLuxuryCloset_cookies.json",
+      "selectors": ["#root > div.DesktopWidth__base___3ZRAa > div > div > div.Mpp__textBoxWrapper___2rgte > div > div > div"]
+    },
+    {
+      "name": "TheVintageBar", "baseURL": "https://thevintagebar.com/", "searchPrefix": "searchItems/", "searchPostfix": "",
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/cookies/theVintageBar_cookies.json",
+      "selectors": ["#categories > ul > li:nth-child(1) > label > span.labelCount.ignore-click-outside"]
+    }
+  ],
+  "connectionMaxTrial": "20"
+}
