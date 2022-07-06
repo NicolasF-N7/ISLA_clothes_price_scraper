@@ -30,75 +30,72 @@ puppeteer.launch({ headless: false }).then(async browser => {
   });
 
   //====Inject cookies====
-  /*Cookies for
-  https://www.vestiairecollective.com/
-  https://www.depop.com
-  https://hardlyeverwornit.com/
-  https://www.etsy.com/
-  NOPE https://www.grailed.com/
-  https://www.videdressing.com/
-  https://theluxurycloset.com/
-  https://thevintagebar.com/
-  NOPE https://www.myprivateboutique.ch/
-  */
-
-  /* Brands already assessed
-  "Fusalp", "Balmain", "Valentino", "Salvatore Ferragamo", "Tod's", "Jimmy Choo", "Christian Louboutin", "Fendi", "Saint Laurent", "Bulgari", "Dolce and Gabbana", "Rolex", "Cartier", "Prada", "Burberry", "Dior", "Hermes", "Gucci", "Louis Vuitton", "Chanel"
-
-  */
-
   let newDataLine = '';
-  //For each BRAND
-  for(let brandName of config.brands_to_process){
-    console.log('---' + brandName + '---');
-    newDataLine += brandName + ',';
+  //For each research query
+  for(let researchQuery of config.research_queries){
+    console.log('---' + researchQuery + '---');
+    newDataLine += researchQuery + ',';
 
     //For each MARKETPLACE
+    let priceList = [];
     for(let marketpl of config.marketplaces_to_visit){
       //Set cookies
       const cookies = fs.readFileSync(marketpl.cookiesFile, 'utf8');
     	const deserializedCookies = JSON.parse(cookies);
     	await page.setCookie(...deserializedCookies);
 
-      let searchURL = marketpl.baseURL + marketpl.searchPrefix + encodeURI(brandName) + marketpl.searchPostfix;
+      //===LOOP to scrape data from several result PAGES===
+      for(let i=1; i < marketpl.number_pages_to_scrape+1; i++){
+        let searchURL = marketpl.baseURL + marketpl.pagePrefix + i + marketpl.searchPrefix + encodeURI(researchQuery) + marketpl.searchPostfix;
 
-      //===Connectivity trial===
-  		let connectionSuccess = false;
-  		let nbTrials = 0;
-  		while(nbTrials < config.connectionMaxTrial && !connectionSuccess){
-  			try{
-  				//await page.goto(searchURL, {waitUntil : 'domcontentloaded'});
-          await page.goto(searchURL);
-  				connectionSuccess = true;
-  			}catch(err){
-  				console.log("NO INTERNET. Trying again in 15 sec");
-  				await page.waitForTimeout(15000);
-  			}
-  			nbTrials++;
-  		}
-  		if(nbTrials > 1){console.log("Internet is baaack!");}
+        //===Connect to webpage until successful connection (avoid problems due to connectivity interuption)===
+    		let connectionSuccess = false;
+    		let nbTrials = 0;
+    		while(nbTrials < config.connectionMaxTrial && !connectionSuccess){
+    			try{
+    				//await page.goto(searchURL, {waitUntil : 'domcontentloaded'});
+            await page.goto(searchURL);
+    				connectionSuccess = true;
+    			}catch(err){
+    				console.log("NO INTERNET. Trying again in 15 sec");
+    				await page.waitForTimeout(15000);
+    			}
+    			nbTrials++;
+    		}
+    		if(nbTrials > 1){console.log("Internet is baaack!");}
 
-      //Scan SELECTORS
-      let totalVisib = 0;
-      for(selector of marketpl.selectors){
+        //Gather all prices elements
+        //Looking for elements: <span _ngcontent-vc-app-c143="" itemprop="price" hidden="">
+        //Solution 3 - Search directly for price elements
+        let priceSelector = "#main-content > catalog-page > vc-catalog > div > div > ais-instantsearch > div > div.catalog__columnProductList > div.catalog__resultContainer > ais-hits > div > ul > li > vc-catalog-snippet > div > div.productSnippet__infos > span > span[itemprop='price']";
+        //Retrieve the list of <span> element containing the price
+        let priceHTMLElementList;
         try{
-          await page.waitForSelector(selector);
-          let selectorTextContent = await page.$eval(selector, el => el.textContent);
-          //Filter non numeric character
-          let cleanedNumberContent = selectorTextContent.replace(/[^\d.-]/g, '');
-          if(isNaN(parseInt(cleanedNumberContent))){
-            totalVisib += 0;
-          }else{
-            totalVisib += parseInt(cleanedNumberContent);
-          }
+          await page.waitForSelector(priceSelector);
+          priceHTMLElementList = await page.$$(priceSelector);
         }catch(err){
-          console.log("Element not found: " + selector);
-          //await page.waitForTimeout(15000000);
+          console.log("Not a single price element not found");
         }
+        console.log(priceHTMLElementList.length + " items scraped on the page " + i);
 
+        //Extract prices from <spam> elements, and store it into priceList
+        for(itemContainer of priceHTMLElementList){
+          //Try to find the price if initial price is displayed (thus discount also)
+          let price = await itemContainer.getProperty('innerText');
+          price = await price.jsonValue();
+
+          //Add price to gathered price list
+          let floatPrice = parseFloat(price);
+          if(isNaN(floatPrice)){console.log("Price not found");}
+          else{priceList.push(floatPrice);}
+        }
       }
-      console.log(marketpl.name + " totalVisib: " + totalVisib);
-      newDataLine += totalVisib + ',';
+
+      console.log("Prices on " + marketpl.name + " for the research: ");
+
+      let avgPrice = (priceList.reduce((a, b) => a + b, 0) / priceList.length).toFixed(2);
+      console.log("Average price: " + avgPrice);
+      newDataLine += priceList.length + ',' + avgPrice + ',' + Math.min(...priceList) + ',' + Math.max(...priceList) + ',' + priceList.toString();
 
     }
     newDataLine += '\n';
@@ -113,6 +110,6 @@ puppeteer.launch({ headless: false }).then(async browser => {
 	    console.log("\nData written to file!\n");
 	  }
 	});
-  browser.close();
+  //browser.close();
 
 })
