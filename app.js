@@ -68,26 +68,29 @@ puppeteer.launch({ headless: false }).then(async browser => {
         //Looking for elements: <span _ngcontent-vc-app-c143="" itemprop="price" hidden="">
         //Solution 3 - Search directly for price elements
         let priceSelector = "#main-content > catalog-page > vc-catalog > div > div > ais-instantsearch > div > div.catalog__columnProductList > div.catalog__resultContainer > ais-hits > div > ul > li > vc-catalog-snippet > div > div.productSnippet__infos > span > span[itemprop='price']";
-        //Retrieve the list of <span> element containing the price
+
         let priceHTMLElementList;
         try{
+          //Retrieve the list of <span> element containing the price
           await page.waitForSelector(priceSelector);
           priceHTMLElementList = await page.$$(priceSelector);
+          console.log(priceHTMLElementList.length + " items scraped on the page " + i);
+
+          //Extract prices from <spam> elements, and store it into priceList
+          for(itemContainer of priceHTMLElementList){
+            //Try to find the price if initial price is displayed (thus discount also)
+            let price = await itemContainer.getProperty('innerText');
+            price = await price.jsonValue();
+
+            //Add price to gathered price list
+            let floatPrice = parseFloat(price);
+            if(isNaN(floatPrice)){console.log("Price not found");}
+            else{priceList.push(floatPrice);}
+          }
         }catch(err){
+          //If not as much items as the number of pages set in the config file, stop the page loop here, and finish by writing the data
           console.log("Not a single price element not found");
-        }
-        console.log(priceHTMLElementList.length + " items scraped on the page " + i);
-
-        //Extract prices from <spam> elements, and store it into priceList
-        for(itemContainer of priceHTMLElementList){
-          //Try to find the price if initial price is displayed (thus discount also)
-          let price = await itemContainer.getProperty('innerText');
-          price = await price.jsonValue();
-
-          //Add price to gathered price list
-          let floatPrice = parseFloat(price);
-          if(isNaN(floatPrice)){console.log("Price not found");}
-          else{priceList.push(floatPrice);}
+          break;
         }
       }
 
@@ -110,6 +113,6 @@ puppeteer.launch({ headless: false }).then(async browser => {
 	    console.log("\nData written to file!\n");
 	  }
 	});
-  //browser.close();
+  browser.close();
 
 })

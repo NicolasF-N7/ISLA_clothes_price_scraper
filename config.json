@@ -1,7 +1,7 @@
 {
   "outputDataSheet": "/home/nico/Documents/prog/web/ISLA/price_scraper/Prices_results.csv",
   "cookiesFilePath": "/home/nico/Documents/prog/web/ISLA/brand_popularity_scraper/vinted+vc_cookies.json",
-  "research_queries": ["Burberry dresses"],
+  "research_queries": ["Saint laurent jacket", "Saint laurent tunic", "Saint laurent blouse", "Chloe bag", "Chloe blouse"],
   "marketplaces_to_visit": [
     {
       "name": "VC",
