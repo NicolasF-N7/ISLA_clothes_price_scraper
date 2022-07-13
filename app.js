@@ -45,7 +45,10 @@ puppeteer.launch({ headless: false }).then(async browser => {
     	await page.setCookie(...deserializedCookies);
 
       //===LOOP to scrape data from several result PAGES===
-      for(let i=1; i < marketpl.number_pages_to_scrape+1; i++){
+      for(let i=1; i < marketpl.numberPagesToScrape+1; i++){
+        //URL = baseURL + pagePrefix + i + searchPrefix + Query + searchPostfix
+        //e.g. for VC https://www.vestiairecollective.com/  search/p- 3 /?q= dior%20bags
+        //e.g. for Vinted https://www.vinted.fr/ vetements?per_page=96&page= 8 &search_text= dior%20bags
         let searchURL = marketpl.baseURL + marketpl.pagePrefix + i + marketpl.searchPrefix + encodeURI(researchQuery) + marketpl.searchPostfix;
 
         //===Connect to webpage until successful connection (avoid problems due to connectivity interuption)===
@@ -67,7 +70,8 @@ puppeteer.launch({ headless: false }).then(async browser => {
         //Gather all prices elements
         //Looking for elements: <span _ngcontent-vc-app-c143="" itemprop="price" hidden="">
         //Solution 3 - Search directly for price elements
-        let priceSelector = "#main-content > catalog-page > vc-catalog > div > div > ais-instantsearch > div > div.catalog__columnProductList > div.catalog__resultContainer > ais-hits > div > ul > li > vc-catalog-snippet > div > div.productSnippet__infos > span > span[itemprop='price']";
+        //let priceSelector = "#main-content > catalog-page > vc-catalog > div > div > ais-instantsearch > div > div.catalog__columnProductList > div.catalog__resultContainer > ais-hits > div > ul > li > vc-catalog-snippet > div > div.productSnippet__infos > span > span[itemprop='price']";
+        let priceSelector = config.marketplaces_to_visit[0].priceElementsSelector;
 
         let priceHTMLElementList;
         try{
@@ -81,7 +85,8 @@ puppeteer.launch({ headless: false }).then(async browser => {
             //Try to find the price if initial price is displayed (thus discount also)
             let price = await itemContainer.getProperty('innerText');
             price = await price.jsonValue();
-
+            price = price.replace(/[,]/g, '.');
+            price = price.replace(/[^\d.-]/g, '');// Clean the price text from currency signs, and thousands (,) signs
             //Add price to gathered price list
             let floatPrice = parseFloat(price);
             if(isNaN(floatPrice)){console.log("Price not found");}
@@ -89,7 +94,7 @@ puppeteer.launch({ headless: false }).then(async browser => {
           }
         }catch(err){
           //If not as much items as the number of pages set in the config file, stop the page loop here, and finish by writing the data
-          console.log("Not a single price element not found");
+          console.log("Not a single price element found on this page");
           break;
         }
       }
@@ -98,7 +103,7 @@ puppeteer.launch({ headless: false }).then(async browser => {
 
       let avgPrice = (priceList.reduce((a, b) => a + b, 0) / priceList.length).toFixed(2);
       console.log("Average price: " + avgPrice);
-      newDataLine += priceList.length + ',' + avgPrice + ',' + Math.min(...priceList) + ',' + Math.max(...priceList) + ',' + priceList.toString();
+      newDataLine += priceList.length + config.marketplaces_to_visit.name + ',' + avgPrice + ',' + Math.min(...priceList) + ',' + Math.max(...priceList) + ',' + priceList.toString();
 
     }
     newDataLine += '\n';

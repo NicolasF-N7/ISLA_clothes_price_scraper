@@ -5,12 +5,12 @@
     {
       "name": "VC",
       "baseURL": "https://www.vestiairecollective.com/",
+      "priceElementsSelector": "#main-content > catalog-page > vc-catalog > div > div > ais-instantsearch > div > div.catalog__columnProductList > div.catalog__resultContainer > ais-hits > div > ul > li > vc-catalog-snippet > div > div.productSnippet__infos > span > span[itemprop='price']",
       "pagePrefix": "search/p-",
       "searchPrefix": "/?q=",
       "searchPostfix": "",
-      "number_pages_to_scrape": 10,
-      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/price_scraper/cookies/vc_cookies.json",
-      "selectors": []
+      "numberPagesToScrape": 10,
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/price_scraper/cookies/vc_cookies.json"
     }
   ],
   "connectionMaxTrial": "20"
