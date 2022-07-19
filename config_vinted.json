@@ -1,0 +1,17 @@
+{
+  "outputDataSheet": "/home/nico/Documents/prog/web/ISLA/price_scraper/Prices_results.csv",
+  "research_queries": ["Saint laurent jacket", "Chloe blouse"],
+  "marketplaces_to_visit": [
+    {
+      "name": "Vinted",
+      "baseURL": "https://www.vinted.fr/",
+      "priceElementsSelector": ".body-content > div > div:nth-child(15) > div > div > div > div > div > div.Cell_cell__3V4ao.Cell_narrow__OBeC0 > div > div > div.Cell_cell__3V4ao.Cell_tight__ArRHW > div.Cell_content__2bRVC > div > div > div > h3",
+      "pagePrefix": "vetements?per_page=96&page=",
+      "searchPrefix": "&search_text=",
+      "searchPostfix": "",
+      "numberPagesToScrape": 10,
+      "cookiesFile": "/home/nico/Documents/prog/web/ISLA/price_scraper/cookies/vinted_cookies.json"
+    }
+  ],
+  "connectionMaxTrial": "20"
+}
